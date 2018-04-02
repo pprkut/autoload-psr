@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("autoload_psr", "for autoload_psr support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("autoload_psr", "enable autoload_psr support", "no");
+
+if (PHP_AUTOLOAD_PSR != "no") {
+	EXTENSION("autoload_psr", "autoload_psr.c", PHP_EXTNAME_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
+}
+
