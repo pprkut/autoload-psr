@@ -1,43 +1,10 @@
-dnl $Id$
 dnl config.m4 for extension autoload_psr
 
-dnl Comments in this file start with the string 'dnl'.
-dnl Remove where necessary. This file will not work
-dnl without editing.
-
-dnl If your extension references something external, use with:
-
-dnl PHP_ARG_WITH(autoload_psr, for autoload_psr support,
-dnl Make sure that the comment is aligned:
-dnl [  --with-autoload_psr             Include autoload_psr support])
-
-dnl Otherwise use enable:
-
-dnl PHP_ARG_ENABLE(autoload_psr, whether to enable autoload_psr support,
-dnl Make sure that the comment is aligned:
-dnl [  --enable-autoload_psr           Enable autoload_psr support])
+PHP_ARG_WITH(autoload_psr, for autoload_psr support,
+Make sure that the comment is aligned:
+[  --with-autoload_psr             Include autoload_psr support])
 
 if test "$PHP_AUTOLOAD_PSR" != "no"; then
-  dnl Write more examples of tests here...
-
-  dnl # get library FOO build options from pkg-config output
-  dnl AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-  dnl AC_MSG_CHECKING(for libfoo)
-  dnl if test -x "$PKG_CONFIG" && $PKG_CONFIG --exists foo; then
-  dnl   if $PKG_CONFIG foo --atleast-version 1.2.3; then
-  dnl     LIBFOO_CFLAGS=`$PKG_CONFIG foo --cflags`
-  dnl     LIBFOO_LIBDIR=`$PKG_CONFIG foo --libs`
-  dnl     LIBFOO_VERSON=`$PKG_CONFIG foo --modversion`
-  dnl     AC_MSG_RESULT(from pkgconfig: version $LIBFOO_VERSON)
-  dnl   else
-  dnl     AC_MSG_ERROR(system libfoo is too old: version 1.2.3 required)
-  dnl   fi
-  dnl else
-  dnl   AC_MSG_ERROR(pkg-config not found)
-  dnl fi
-  dnl PHP_EVAL_LIBLINE($LIBFOO_LIBDIR, AUTOLOAD_PSR_SHARED_LIBADD)
-  dnl PHP_EVAL_INCLINE($LIBFOO_CFLAGS)
-
   dnl # --with-autoload_psr -> check with-path
   dnl SEARCH_PATH="/usr/local /usr"     # you might want to change this
   dnl SEARCH_FOR="/include/autoload_psr.h"  # you most likely want to change this
