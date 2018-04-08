@@ -5,6 +5,7 @@
 
 #include "php.h"
 #include "php_ini.h"
+#include "php_main.h"
 #include "ext/standard/info.h"
 #include "php_autoload_psr.h"
 
@@ -18,6 +19,86 @@ PHP_INI_BEGIN()
     STD_PHP_INI_ENTRY("autoload_psr.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_autoload_psr_globals, autoload_psr_globals)
 PHP_INI_END()
 */
+/* }}} */
+
+/* {{{ */
+static int include_class_file(zend_string *class, char *class_file, int class_file_len)
+{
+    zval dummy;
+    zend_file_handle file_handle;
+    zend_op_array *new_op_array;
+    zval result;
+    int ret;
+
+    ret = php_stream_open_for_zend_ex(class_file, &file_handle, USE_PATH|STREAM_OPEN_FOR_INCLUDE);
+
+    if (ret == SUCCESS) {
+        zend_string *opened_path;
+        if (!file_handle.opened_path) {
+            file_handle.opened_path = zend_string_init(class_file, class_file_len, 0);
+        }
+        opened_path = zend_string_copy(file_handle.opened_path);
+        ZVAL_NULL(&dummy);
+        if (zend_hash_add(&EG(included_files), opened_path, &dummy)) {
+            new_op_array = zend_compile_file(&file_handle, ZEND_REQUIRE);
+            zend_destroy_file_handle(&file_handle);
+        } else {
+            new_op_array = NULL;
+            zend_file_handle_dtor(&file_handle);
+        }
+        zend_string_release(opened_path);
+        if (new_op_array) {
+            ZVAL_UNDEF(&result);
+            zend_execute(new_op_array, &result);
+
+            destroy_op_array(new_op_array);
+            efree(new_op_array);
+            if (!EG(exception)) {
+                zval_ptr_dtor(&result);
+            }
+
+            return zend_hash_exists(EG(class_table), class);
+        }
+    }
+
+    return 0;
+}
+/* }}} */
+
+/* {{{ */
+static int autoload_psr0(zend_string *class)
+{
+    char *class_file;
+    int class_file_len;
+
+    class_file_len = (int)spprintf(&class_file, 0, "%s.php", ZSTR_VAL(class));
+
+#if DEFAULT_SLASH != '\\'
+    {
+        char *ptr = class_file;
+        char *end = ptr + class_file_len;
+
+        while ((ptr = memchr(ptr, '\\', (end - ptr))) != NULL) {
+            *ptr = DEFAULT_SLASH;
+        }
+    }
+#endif
+
+    {
+        char *ptr = class_file;
+        char *end = ptr + class_file_len;
+
+        while ((ptr = memchr(ptr, '_', (end - ptr))) != NULL) {
+            *ptr = DEFAULT_SLASH;
+        }
+    }
+
+    include_class_file(class, class_file, class_file_len);
+
+    efree(class_file);
+
+    return 0;
+}
 /* }}} */
 
 /* {{{ proto void autoload_register_psr4_prefix(string prefix, string path)
@@ -36,6 +117,20 @@ PHP_FUNCTION(autoload_register_psr4_prefix)
     ZVAL_STR(&path_val, path);
 
     zend_hash_update(AUTOLOAD_PSR_G(psr4_prefixes), prefix, &path_val);
+}
+/* }}} */
+
+/* {{{ proto void autoload_psr(string class)
+   Autoload class based on the PSR-0 or PSR-4 standard */
+PHP_FUNCTION(autoload_psr)
+{
+    zend_string *class;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_STR(class);
+    ZEND_PARSE_PARAMETERS_END();
+
+    autoload_psr0(class);
 }
 /* }}} */
 
@@ -131,6 +226,7 @@ PHP_MINFO_FUNCTION(autoload_psr)
  */
 const zend_function_entry autoload_psr_functions[] = {
     PHP_FE(autoload_register_psr4_prefix,    NULL)
+    PHP_FE(autoload_psr, NULL)
     PHP_FE_END    /* Must be the last line in autoload_psr_functions[] */
 };
 /* }}} */
