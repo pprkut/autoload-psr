@@ -177,6 +177,16 @@ PHP_RINIT_FUNCTION(autoload_psr)
     ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
+    zval function, ret, params[1];
+
+    ZVAL_STRING(&function, "spl_autoload_register");
+    ZVAL_STRING(&params[0], "autoload_psr");
+
+    call_user_function(EG(function_table), NULL, &function, &ret, 1, params);
+
+    zval_ptr_dtor(&function);
+    zval_ptr_dtor(&ret);
+
     return SUCCESS;
 }
 /* }}} */
