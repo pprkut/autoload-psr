@@ -22,6 +22,7 @@ PHP_INI_END()
 /* }}} */
 
 /* {{{ */
+/* Based on code from php_spl.c */
 static int include_class_file(zend_string *class, char *class_file, int class_file_len)
 {
     zval dummy;
@@ -66,6 +67,7 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
 /* }}} */
 
 /* {{{ */
+/* Based on code from php_spl.c */
 static int autoload_psr0(zend_string *class)
 {
     char *class_file;
