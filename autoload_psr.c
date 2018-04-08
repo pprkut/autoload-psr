@@ -8,9 +8,7 @@
 #include "ext/standard/info.h"
 #include "php_autoload_psr.h"
 
-/* If you declare any globals in php_autoload_psr.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(autoload_psr)
-*/
 
 /* {{{ PHP_INI
  */
@@ -26,17 +24,18 @@ PHP_INI_END()
    Register a path for a namespace prefix to be used by the PSR-4 autoloader */
 PHP_FUNCTION(autoload_register_psr4_prefix)
 {
-    char *arg = NULL;
-    size_t arg_len, len;
-    zend_string *strg;
+    zend_string *prefix, *path;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_len) == FAILURE) {
-        return;
-    }
+    ZEND_PARSE_PARAMETERS_START(2, 2)
+        Z_PARAM_STR(prefix);
+        Z_PARAM_STR(path);
+    ZEND_PARSE_PARAMETERS_END();
 
-    strg = strpprintf(0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "autoload_psr", arg);
+    zval path_val;
 
-    RETURN_STR(strg);
+    ZVAL_STR(&path_val, path);
+
+    zend_hash_update(AUTOLOAD_PSR_G(psr4_prefixes), prefix, &path_val);
 }
 /* }}} */
 
@@ -80,6 +79,7 @@ PHP_RINIT_FUNCTION(autoload_psr)
 #if defined(COMPILE_DL_AUTOLOAD_PSR) && defined(ZTS)
     ZEND_TSRMLS_CACHE_UPDATE();
 #endif
+
     return SUCCESS;
 }
 /* }}} */
@@ -89,6 +89,25 @@ PHP_RINIT_FUNCTION(autoload_psr)
 PHP_RSHUTDOWN_FUNCTION(autoload_psr)
 {
     return SUCCESS;
+}
+/* }}} */
+
+/* {{{ PHP_GINIT_FUNCTION
+ */
+PHP_GINIT_FUNCTION(autoload_psr)
+{
+    ALLOC_HASHTABLE(autoload_psr_globals->psr4_prefixes);
+
+    zend_hash_init(autoload_psr_globals->psr4_prefixes, 0, NULL, ZVAL_PTR_DTOR, 0);
+}
+/* }}} */
+
+/* {{{ PHP_GSHUTDOWN_FUNCTION
+ */
+PHP_GSHUTDOWN_FUNCTION(autoload_psr)
+{
+    zend_hash_destroy(autoload_psr_globals->psr4_prefixes);
+    FREE_HASHTABLE(autoload_psr_globals->psr4_prefixes);
 }
 /* }}} */
 
@@ -128,7 +147,11 @@ zend_module_entry autoload_psr_module_entry = {
     PHP_RSHUTDOWN(autoload_psr),
     PHP_MINFO(autoload_psr),
     PHP_AUTOLOAD_PSR_VERSION,
-    STANDARD_MODULE_PROPERTIES
+    PHP_MODULE_GLOBALS(autoload_psr),
+    PHP_GINIT(autoload_psr),
+    PHP_GSHUTDOWN(autoload_psr),
+    NULL,
+    STANDARD_MODULE_PROPERTIES_EX
 };
 /* }}} */
 
