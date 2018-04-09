@@ -21,6 +21,7 @@ extern zend_module_entry autoload_psr_module_entry;
 
 ZEND_BEGIN_MODULE_GLOBALS(autoload_psr)
     HashTable  *psr4_prefixes;
+    zend_bool  loaded;
 ZEND_END_MODULE_GLOBALS(autoload_psr)
 
 /* Always refer to the globals in your function as AUTOLOAD_PSR_G(variable).

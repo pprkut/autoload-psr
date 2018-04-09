@@ -58,6 +58,8 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
                 zval_ptr_dtor(&result);
             }
 
+            AUTOLOAD_PSR_G(loaded) = 1;
+
             return zend_hash_exists(EG(class_table), class);
         }
     }
@@ -103,6 +105,13 @@ static int autoload_psr0(zend_string *class)
 }
 /* }}} */
 
+/* {{{ */
+static int autoload_psr4(zend_string *class)
+{
+    return 0;
+}
+/* }}} */
+
 /* {{{ proto void autoload_register_psr4_prefix(string prefix, string path)
    Register a path for a namespace prefix to be used by the PSR-4 autoloader */
 PHP_FUNCTION(autoload_register_psr4_prefix)
@@ -132,7 +141,13 @@ PHP_FUNCTION(autoload_psr)
         Z_PARAM_STR(class);
     ZEND_PARSE_PARAMETERS_END();
 
+    AUTOLOAD_PSR_G(loaded) = 0;
+
     autoload_psr0(class);
+
+    if (!AUTOLOAD_PSR_G(loaded)) {
+        autoload_psr4(class);
+    }
 }
 /* }}} */
 
