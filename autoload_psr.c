@@ -108,6 +108,53 @@ static int autoload_psr0(zend_string *class)
 /* {{{ */
 static int autoload_psr4(zend_string *class)
 {
+    zend_string *namespace2;
+    char *e, *ptr, *found, *class_name, *class_file;
+    int namespace_len, class_name_len, class_file_len;
+    zval *base_path;
+
+    ptr = ZSTR_VAL(class);
+
+    class_name_len = (int)spprintf(&class_name, 0, "%s", ptr);
+
+    namespace2 = zend_string_init(ZSTR_VAL(class), ZSTR_LEN(class), 0);
+
+    e = namespace2->val + namespace2->len;
+
+    found = (char *)zend_memrchr(namespace2->val, '\\', (e - namespace2->val));
+
+    do
+    {
+        e = found - 1;
+        *found = '\0';
+        namespace_len = found - namespace2->val;
+
+        class_name_len = (int)spprintf(&class_name, 0, "%s", ptr + (namespace_len) + 1);
+
+        if (zend_hash_str_exists(AUTOLOAD_PSR_G(psr4_prefixes), namespace2->val, namespace_len))
+        {
+            base_path = zend_hash_str_find(AUTOLOAD_PSR_G(psr4_prefixes), namespace2->val, namespace_len);
+
+#if DEFAULT_SLASH != '\\'
+            {
+                char *ptr = class_name;
+                char *end = ptr + class_name_len;
+
+                while ((ptr = memchr(ptr, '\\', (end - ptr))) != NULL) {
+                    *ptr = DEFAULT_SLASH;
+                }
+            }
+#endif
+
+            class_file_len = (int)spprintf(&class_file, 0, "%s%s.php", base_path->value.str->val, class_name);
+
+            include_class_file(class, class_file, class_file_len);
+
+            return 0;
+        }
+   }
+    while ((found = (char *)zend_memrchr(namespace2->val, '\\', (e - namespace2->val))) != NULL);
+
     return 0;
 }
 /* }}} */
