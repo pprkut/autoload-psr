@@ -108,7 +108,7 @@ static int autoload_psr0(zend_string *class)
 /* {{{ */
 static int autoload_psr4(zend_string *class)
 {
-    zend_string *namespace2;
+    zend_string *namespace;
     char *e, *ptr, *found, *class_name, *class_file;
     int namespace_len, class_name_len, class_file_len;
     zval *base_path;
@@ -117,23 +117,23 @@ static int autoload_psr4(zend_string *class)
 
     class_name_len = (int)spprintf(&class_name, 0, "%s", ptr);
 
-    namespace2 = zend_string_init(ZSTR_VAL(class), ZSTR_LEN(class), 0);
+    namespace = zend_string_init(ZSTR_VAL(class), ZSTR_LEN(class), 0);
 
-    e = namespace2->val + namespace2->len;
+    e = namespace->val + namespace->len;
 
-    found = (char *)zend_memrchr(namespace2->val, '\\', (e - namespace2->val));
+    found = (char *)zend_memrchr(namespace->val, '\\', (e - namespace->val));
 
     do
     {
         e = found - 1;
         *found = '\0';
-        namespace_len = found - namespace2->val;
+        namespace_len = found - namespace->val;
 
         class_name_len = (int)spprintf(&class_name, 0, "%s", ptr + (namespace_len) + 1);
 
-        if (zend_hash_str_exists(AUTOLOAD_PSR_G(psr4_prefixes), namespace2->val, namespace_len))
+        if (zend_hash_str_exists(AUTOLOAD_PSR_G(psr4_prefixes), namespace->val, namespace_len))
         {
-            base_path = zend_hash_str_find(AUTOLOAD_PSR_G(psr4_prefixes), namespace2->val, namespace_len);
+            base_path = zend_hash_str_find(AUTOLOAD_PSR_G(psr4_prefixes), namespace->val, namespace_len);
 
 #if DEFAULT_SLASH != '\\'
             {
@@ -150,10 +150,18 @@ static int autoload_psr4(zend_string *class)
 
             include_class_file(class, class_file, class_file_len);
 
+            efree(class_name);
+            efree(class_file);
+            efree(namespace);
+
             return 0;
         }
    }
-    while ((found = (char *)zend_memrchr(namespace2->val, '\\', (e - namespace2->val))) != NULL);
+    while ((found = (char *)zend_memrchr(namespace->val, '\\', (e - namespace->val))) != NULL);
+
+    efree(class_name);
+    efree(class_file);
+    efree(namespace);
 
     return 0;
 }
@@ -172,7 +180,7 @@ PHP_FUNCTION(autoload_register_psr4_prefix)
 
     zval path_val;
 
-    ZVAL_STR(&path_val, path);
+    ZVAL_STR_COPY(&path_val, path);
 
     zend_hash_update(AUTOLOAD_PSR_G(psr4_prefixes), prefix, &path_val);
 }
