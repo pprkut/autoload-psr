@@ -22,6 +22,19 @@ PHP_INI_END()
 /* }}} */
 
 /* {{{ */
+static int initialize_hashtable()
+{
+    if (!AUTOLOAD_PSR_G(psr4_prefixes))
+    {
+        ALLOC_HASHTABLE(AUTOLOAD_PSR_G(psr4_prefixes));
+        zend_hash_init(AUTOLOAD_PSR_G(psr4_prefixes), 0, NULL, ZVAL_PTR_DTOR, 0);
+    }
+
+    return SUCCESS;
+}
+/* }}} */
+
+/* {{{ */
 /* Based on code from php_spl.c */
 static int include_class_file(zend_string *class, char *class_file, int class_file_len)
 {
@@ -113,6 +126,8 @@ static int autoload_psr4(zend_string *class)
     int namespace_len, class_name_len, class_file_len;
     zval *base_path;
 
+    initialize_hashtable();
+
     ptr = ZSTR_VAL(class);
 
     class_name_len = (int)spprintf(&class_name, 0, "%s", ptr);
@@ -182,6 +197,8 @@ PHP_FUNCTION(autoload_register_psr4_prefix)
 
     ZVAL_STR_COPY(&path_val, path);
 
+    initialize_hashtable();
+
     zend_hash_update(AUTOLOAD_PSR_G(psr4_prefixes), prefix, &path_val);
 }
 /* }}} */
@@ -247,6 +264,9 @@ PHP_RINIT_FUNCTION(autoload_psr)
     ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
+    AUTOLOAD_PSR_G(psr4_prefixes) = NULL;
+    AUTOLOAD_PSR_G(loaded) = 0;
+
     zval function, ret, params[1];
 
     ZVAL_STRING(&function, "spl_autoload_register");
@@ -265,6 +285,12 @@ PHP_RINIT_FUNCTION(autoload_psr)
  */
 PHP_RSHUTDOWN_FUNCTION(autoload_psr)
 {
+    if (AUTOLOAD_PSR_G(psr4_prefixes))
+    {
+        zend_hash_destroy(AUTOLOAD_PSR_G(psr4_prefixes));
+        FREE_HASHTABLE(AUTOLOAD_PSR_G(psr4_prefixes));
+    }
+
     return SUCCESS;
 }
 /* }}} */
@@ -273,18 +299,8 @@ PHP_RSHUTDOWN_FUNCTION(autoload_psr)
  */
 PHP_GINIT_FUNCTION(autoload_psr)
 {
-    ALLOC_HASHTABLE(autoload_psr_globals->psr4_prefixes);
-
-    zend_hash_init(autoload_psr_globals->psr4_prefixes, 0, NULL, ZVAL_PTR_DTOR, 0);
-}
-/* }}} */
-
-/* {{{ PHP_GSHUTDOWN_FUNCTION
- */
-PHP_GSHUTDOWN_FUNCTION(autoload_psr)
-{
-    zend_hash_destroy(autoload_psr_globals->psr4_prefixes);
-    FREE_HASHTABLE(autoload_psr_globals->psr4_prefixes);
+    autoload_psr_globals->psr4_prefixes = NULL;
+    autoload_psr_globals->loaded = 0;
 }
 /* }}} */
 
@@ -327,7 +343,7 @@ zend_module_entry autoload_psr_module_entry = {
     PHP_AUTOLOAD_PSR_VERSION,
     PHP_MODULE_GLOBALS(autoload_psr),
     PHP_GINIT(autoload_psr),
-    PHP_GSHUTDOWN(autoload_psr),
+    NULL,
     NULL,
     STANDARD_MODULE_PROPERTIES_EX
 };
