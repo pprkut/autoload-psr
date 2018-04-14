@@ -175,7 +175,6 @@ static int autoload_psr4(zend_string *class)
     while ((found = (char *)zend_memrchr(ZSTR_VAL(namespace), '\\', (e - ZSTR_VAL(namespace)))) != NULL);
 
     efree(class_name);
-    efree(class_file);
     efree(namespace);
 
     return 0;
