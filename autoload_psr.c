@@ -85,10 +85,24 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
 /* Based on code from php_spl.c */
 static int autoload_psr0(zend_string *class)
 {
-    char *class_file;
-    int class_file_len;
+    char *class_file, *namespace, *class_name, *found;
+    int class_file_len, class_name_len;
 
-    class_file_len = (int)spprintf(&class_file, 0, "%s.php", ZSTR_VAL(class));
+    found = (char *)zend_memrchr(ZSTR_VAL(class), '\\', ZSTR_LEN(class));
+
+    spprintf(&namespace, 0, "%.*s", found - ZSTR_VAL(class), ZSTR_VAL(class));
+    class_name_len = (int)spprintf(&class_name, 0, "%s", found + 1);
+
+    {
+        char *ptr = class_name;
+        char *end = ptr + class_name_len;
+
+        while ((ptr = memchr(ptr, '_', (end - ptr))) != NULL) {
+            *ptr = DEFAULT_SLASH;
+        }
+    }
+
+    class_file_len = (int)spprintf(&class_file, 0, "%s\\%s.php", namespace, class_name);
 
 #if DEFAULT_SLASH != '\\'
     {
@@ -101,18 +115,11 @@ static int autoload_psr0(zend_string *class)
     }
 #endif
 
-    {
-        char *ptr = class_file;
-        char *end = ptr + class_file_len;
-
-        while ((ptr = memchr(ptr, '_', (end - ptr))) != NULL) {
-            *ptr = DEFAULT_SLASH;
-        }
-    }
-
     include_class_file(class, class_file, class_file_len);
 
     efree(class_file);
+    efree(class_name);
+    efree(namespace);
 
     return 0;
 }
