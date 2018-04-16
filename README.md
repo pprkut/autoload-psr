@@ -19,5 +19,5 @@ API
 * @param string prefix
 * @param string path
 **/
-funciton autoload_register_psr4_prefix(string prefix, string path) : void;
+function autoload_register_psr4_prefix(string prefix, string path) : void;
 ```
