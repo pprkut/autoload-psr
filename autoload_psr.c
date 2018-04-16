@@ -90,8 +90,12 @@ static int autoload_psr0(zend_string *class)
 
     found = (char *)zend_memrchr(ZSTR_VAL(class), '\\', ZSTR_LEN(class));
 
-    spprintf(&namespace, 0, "%.*s", found - ZSTR_VAL(class), ZSTR_VAL(class));
-    class_name_len = (int)spprintf(&class_name, 0, "%s", found + 1);
+    if (found) {
+        spprintf(&namespace, 0, "%.*s", found - ZSTR_VAL(class), ZSTR_VAL(class));
+        class_name_len = (int)spprintf(&class_name, 0, "%s", found + 1);
+    } else {
+        class_name_len = (int)spprintf(&class_name, 0, "%s", ZSTR_VAL(class));
+    }
 
     {
         char *ptr = class_name;
@@ -102,7 +106,11 @@ static int autoload_psr0(zend_string *class)
         }
     }
 
-    class_file_len = (int)spprintf(&class_file, 0, "%s\\%s.php", namespace, class_name);
+    if (found) {
+        class_file_len = (int)spprintf(&class_file, 0, "%s\\%s.php", namespace, class_name);
+    } else {
+        class_file_len = (int)spprintf(&class_file, 0, "%s.php", class_name);
+    }
 
 #if DEFAULT_SLASH != '\\'
     {
@@ -119,7 +127,10 @@ static int autoload_psr0(zend_string *class)
 
     efree(class_file);
     efree(class_name);
-    efree(namespace);
+
+    if (found) {
+        efree(namespace);
+    }
 
     return 0;
 }
@@ -144,6 +155,10 @@ static int autoload_psr4(zend_string *class)
     e = ZSTR_VAL(namespace) + ZSTR_LEN(namespace);
 
     found = (char *)zend_memrchr(ZSTR_VAL(namespace), '\\', (e - ZSTR_VAL(namespace)));
+
+    if (!found) {
+        return 0;
+    }
 
     do
     {
