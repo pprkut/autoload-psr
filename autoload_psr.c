@@ -139,10 +139,19 @@ static int autoload_psr0(zend_string *class)
 /* {{{ */
 static int autoload_psr4(zend_string *class)
 {
-    zend_string *namespace;
-    char *e, *ptr, *found, *class_name, *class_file;
+    char *e, *ptr, *found, *class_name, *class_file, *namespace;
     int namespace_len, class_name_len, class_file_len;
     zval *base_path;
+
+    namespace_len = (int)spprintf(&namespace, 0, "%s", ZSTR_VAL(class));
+
+    found = (char *)zend_memrchr(namespace, '\\', namespace_len);
+
+    if (!found) {
+        efree(namespace);
+
+        return 0;
+    }
 
     initialize_hashtable();
 
@@ -150,28 +159,18 @@ static int autoload_psr4(zend_string *class)
 
     class_name_len = (int)spprintf(&class_name, 0, "%s", ptr);
 
-    namespace = zend_string_init(ZSTR_VAL(class), ZSTR_LEN(class), 0);
-
-    e = ZSTR_VAL(namespace) + ZSTR_LEN(namespace);
-
-    found = (char *)zend_memrchr(ZSTR_VAL(namespace), '\\', (e - ZSTR_VAL(namespace)));
-
-    if (!found) {
-        return 0;
-    }
-
     do
     {
         e = found - 1;
         *found = '\0';
-        namespace_len = found - ZSTR_VAL(namespace);
+        namespace_len = found - namespace;
 
         class_name_len = (int)spprintf(&class_name, 0, "%s", ptr + (namespace_len) + 1);
 
-        if (zend_hash_str_exists(AUTOLOAD_PSR_G(psr4_prefixes), ZSTR_VAL(namespace), namespace_len))
-        {
-            base_path = zend_hash_str_find(AUTOLOAD_PSR_G(psr4_prefixes), ZSTR_VAL(namespace), namespace_len);
+        base_path = zend_hash_str_find(AUTOLOAD_PSR_G(psr4_prefixes), namespace, namespace_len);
 
+        if (base_path)
+        {
 #if DEFAULT_SLASH != '\\'
             {
                 char *ptr = class_name;
@@ -194,7 +193,7 @@ static int autoload_psr4(zend_string *class)
             return 0;
         }
    }
-    while ((found = (char *)zend_memrchr(ZSTR_VAL(namespace), '\\', (e - ZSTR_VAL(namespace)))) != NULL);
+    while ((found = (char *)zend_memrchr(namespace, '\\', (e - namespace))) != NULL);
 
     efree(class_name);
     efree(namespace);
