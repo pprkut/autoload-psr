@@ -83,15 +83,12 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
 
 /* {{{ */
 /* Based on code from php_spl.c */
-static int autoload_psr0(zend_string *class)
+static int autoload_psr0(zend_string *class, char *namespace, char *found)
 {
-    char *class_file, *namespace, *class_name, *found;
+    char *class_file, *class_name;
     int class_file_len, class_name_len;
 
-    found = (char *)zend_memrchr(ZSTR_VAL(class), '\\', ZSTR_LEN(class));
-
     if (found) {
-        spprintf(&namespace, 0, "%.*s", found - ZSTR_VAL(class), ZSTR_VAL(class));
         class_name_len = (int)spprintf(&class_name, 0, "%s", found + 1);
     } else {
         class_name_len = (int)spprintf(&class_name, 0, "%s", ZSTR_VAL(class));
@@ -107,7 +104,7 @@ static int autoload_psr0(zend_string *class)
     }
 
     if (found) {
-        class_file_len = (int)spprintf(&class_file, 0, "%s\\%s.php", namespace, class_name);
+        class_file_len = (int)spprintf(&class_file, 0, "%.*s\\%s.php", found - namespace, namespace, class_name);
     } else {
         class_file_len = (int)spprintf(&class_file, 0, "%s.php", class_name);
     }
@@ -128,36 +125,18 @@ static int autoload_psr0(zend_string *class)
     efree(class_file);
     efree(class_name);
 
-    if (found) {
-        efree(namespace);
-    }
-
     return 0;
 }
 /* }}} */
 
 /* {{{ */
-static int autoload_psr4(zend_string *class)
+static int autoload_psr4(zend_string *class, char *namespace, int namespace_len, char *found)
 {
-    char *e, *ptr, *found, *class_name, *class_file, *namespace;
-    int namespace_len, class_name_len, class_file_len;
+    char *e, *class_name, *class_file;
+    int class_name_len, class_file_len;
     zval *base_path;
 
-    namespace_len = (int)spprintf(&namespace, 0, "%s", ZSTR_VAL(class));
-
-    found = (char *)zend_memrchr(namespace, '\\', namespace_len);
-
-    if (!found) {
-        efree(namespace);
-
-        return 0;
-    }
-
     initialize_hashtable();
-
-    ptr = ZSTR_VAL(class);
-
-    class_name_len = (int)spprintf(&class_name, 0, "%s", ptr);
 
     do
     {
@@ -165,7 +144,7 @@ static int autoload_psr4(zend_string *class)
         *found = '\0';
         namespace_len = found - namespace;
 
-        class_name_len = (int)spprintf(&class_name, 0, "%s", ptr + (namespace_len) + 1);
+        class_name_len = (int)spprintf(&class_name, 0, "%s", ZSTR_VAL(class) + (namespace_len) + 1);
 
         base_path = zend_hash_str_find(AUTOLOAD_PSR_G(psr4_prefixes), namespace, namespace_len);
 
@@ -188,7 +167,6 @@ static int autoload_psr4(zend_string *class)
 
             efree(class_name);
             efree(class_file);
-            efree(namespace);
 
             return 0;
         }
@@ -196,7 +174,6 @@ static int autoload_psr4(zend_string *class)
     while ((found = (char *)zend_memrchr(namespace, '\\', (e - namespace))) != NULL);
 
     efree(class_name);
-    efree(namespace);
 
     return 0;
 }
@@ -228,6 +205,8 @@ PHP_FUNCTION(autoload_register_psr4_prefix)
 PHP_FUNCTION(autoload_psr)
 {
     zend_string *class;
+    char *found, *namespace;
+    int namespace_len;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
         Z_PARAM_STR(class);
@@ -235,11 +214,17 @@ PHP_FUNCTION(autoload_psr)
 
     AUTOLOAD_PSR_G(loaded) = 0;
 
-    autoload_psr0(class);
+    namespace_len = (int)spprintf(&namespace, 0, "%s", ZSTR_VAL(class));
 
-    if (!AUTOLOAD_PSR_G(loaded)) {
-        autoload_psr4(class);
+    found = (char *)zend_memrchr(namespace, '\\', namespace_len);
+
+    autoload_psr0(class, namespace, found);
+
+    if (!AUTOLOAD_PSR_G(loaded) && found) {
+        autoload_psr4(class, namespace, namespace_len, found);
     }
+
+    efree(namespace);
 }
 /* }}} */
 
