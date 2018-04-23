@@ -1,0 +1,14 @@
+language: php
+php:
+    - 7.0
+    - 7.1
+    - 7.2
+    - nightly
+install:
+    - sudo apt-get update
+    - sudo apt-get install -y valgrind
+script:
+    - phpize
+    - ./configure
+    - make
+    - REPORT_EXIT_STATUS=1 TEST_PHP_ARGS="-m -q --show-diff" make test
