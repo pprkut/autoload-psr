@@ -141,7 +141,6 @@ static int autoload_psr4(zend_string *class, char *namespace, int namespace_len,
     do
     {
         e = found - 1;
-        *found = '\0';
         namespace_len = found - namespace;
 
         class_name_len = (int)spprintf(&class_name, 0, "%s", ZSTR_VAL(class) + (namespace_len) + 1);
@@ -170,7 +169,9 @@ static int autoload_psr4(zend_string *class, char *namespace, int namespace_len,
 
             return 0;
         }
-   }
+
+        efree(class_name);
+    }
     while ((found = (char *)zend_memrchr(namespace, '\\', (e - namespace))) != NULL);
 
     efree(class_name);
@@ -281,6 +282,7 @@ PHP_RINIT_FUNCTION(autoload_psr)
 
     zval_ptr_dtor(&function);
     zval_ptr_dtor(&ret);
+    zval_ptr_dtor(&params[0]);
 
     return SUCCESS;
 }
