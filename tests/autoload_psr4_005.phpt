@@ -9,8 +9,8 @@ $class1 = new TestClass();
 $class2 = new \TestClass();
 
 ?>
---EXPECT--
-Fatal error: Uncaught Error: Class 'TestClass' not found in /mnt/progs/projects/personal/autoload_psr/tests/autoload_psr4_005.php:3
+--EXPECTF--
+Fatal error: Uncaught Error: Class 'TestClass' not found in %sautoload_psr4_005.php:%d
 Stack trace:
 #0 {main}
-  thrown in /mnt/progs/projects/personal/autoload_psr/tests/autoload_psr4_005.php on line 3
+  thrown in %sautoload_psr4_005.php on line %d
