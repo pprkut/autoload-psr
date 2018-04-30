@@ -174,8 +174,6 @@ static int autoload_psr4(zend_string *class, char *namespace, int namespace_len,
     }
     while ((found = (char *)zend_memrchr(namespace, '\\', (e - namespace))) != NULL);
 
-    efree(class_name);
-
     return 0;
 }
 /* }}} */
