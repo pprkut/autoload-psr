@@ -24,3 +24,21 @@ API
 **/
 function autoload_register_psr4_prefix(string prefix, string path) : void;
 ```
+
+Installation
+===
+
+```
+$> phpize
+$> ./configure
+$> make
+$> make install
+```
+
+Once installed you need to add
+
+```
+extension=autoload_psr.so
+```
+
+to your ```php.ini``` file.
