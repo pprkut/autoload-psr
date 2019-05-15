@@ -164,10 +164,12 @@ static int autoload_psr4(zend_string *class, char *namespace, int namespace_len,
 
             include_class_file(class, class_file, class_file_len);
 
-            efree(class_name);
             efree(class_file);
 
-            return 0;
+            if (AUTOLOAD_PSR_G(loaded)) {
+                efree(class_name);
+                return 0;
+            }
         }
 
         efree(class_name);
