@@ -160,15 +160,38 @@ static int autoload_psr4(zend_string *class, char *namespace, int namespace_len,
             }
 #endif
 
-            class_file_len = (int)spprintf(&class_file, 0, "%s%s.php", ZSTR_VAL(Z_STR_P(base_path)), class_name);
+            if (Z_TYPE_P(base_path) == IS_ARRAY) {
+                HashPosition position;
+                zval *data;
+                HashTable *prefixes = Z_ARR_P(base_path);
 
-            include_class_file(class, class_file, class_file_len);
+                for (zend_hash_internal_pointer_reset_ex(prefixes, &position);
+                     (data = zend_hash_get_current_data_ex(prefixes, &position));
+                     zend_hash_move_forward_ex(prefixes, &position))
+                {
+                        class_file_len = (int)spprintf(&class_file, 0, "%s%s.php", ZSTR_VAL(Z_STR_P(data)), class_name);
 
-            efree(class_file);
+                        include_class_file(class, class_file, class_file_len);
 
-            if (AUTOLOAD_PSR_G(loaded)) {
-                efree(class_name);
-                return 0;
+                        efree(class_file);
+
+                        if (AUTOLOAD_PSR_G(loaded)) {
+                            efree(class_name);
+                            return 0;
+                        }
+                }
+
+            } else {
+                class_file_len = (int)spprintf(&class_file, 0, "%s%s.php", ZSTR_VAL(Z_STR_P(base_path)), class_name);
+
+                include_class_file(class, class_file, class_file_len);
+
+                efree(class_file);
+
+                if (AUTOLOAD_PSR_G(loaded)) {
+                    efree(class_name);
+                    return 0;
+                }
             }
         }
 
@@ -185,6 +208,7 @@ static int autoload_psr4(zend_string *class, char *namespace, int namespace_len,
 PHP_FUNCTION(autoload_register_psr4_prefix)
 {
     zend_string *prefix, *path;
+    zval *base_path;
 
     ZEND_PARSE_PARAMETERS_START(2, 2)
         Z_PARAM_STR(prefix);
@@ -197,7 +221,27 @@ PHP_FUNCTION(autoload_register_psr4_prefix)
 
     initialize_hashtable();
 
-    zend_hash_update(AUTOLOAD_PSR_G(psr4_prefixes), prefix, &path_val);
+    base_path = zend_hash_find(AUTOLOAD_PSR_G(psr4_prefixes), prefix);
+
+    if (!base_path) {
+        zend_hash_update(AUTOLOAD_PSR_G(psr4_prefixes), prefix, &path_val);
+    } else if (Z_TYPE_P(base_path) == IS_ARRAY) {
+        zend_hash_next_index_insert(Z_ARR_P(base_path), &path_val);
+    } else {
+        HashTable* prefixes;
+
+        ALLOC_HASHTABLE(prefixes);
+        zend_hash_init(prefixes, 0, NULL, ZVAL_PTR_DTOR, 0);
+
+        zval prefixes_arr;
+
+        ZVAL_ARR(&prefixes_arr, prefixes);
+
+        zend_hash_next_index_insert_new(prefixes, base_path);
+        zend_hash_next_index_insert_new(prefixes, &path_val);
+
+        zend_hash_update(AUTOLOAD_PSR_G(psr4_prefixes), prefix, &prefixes_arr);
+    }
 }
 /* }}} */
 
