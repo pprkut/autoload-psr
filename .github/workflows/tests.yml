@@ -1,0 +1,57 @@
+name: Make test
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: PHP ${{ matrix.php-version }}
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.0', '7.1', '7.2', '7.3', '7.4']
+        experimental: [ false ]
+        include:
+          - php-version: '8.0'
+            experimental: true
+        include:
+          - php-version: '8.1'
+            experimental: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: phpize
+          coverage: none
+
+      - name: Install valgrind
+        run: sudo apt-get install -y valgrind
+
+      - name: Get php run-tests
+        run: wget -q -O run-tests.php https://raw.githubusercontent.com/php/php-src/master/run-tests.php
+
+      - name: PHPize source
+        run: phpize
+
+      - name: Configure source
+        run: ./configure
+
+      - name: Make
+        run: make
+
+      - name: Make test
+        env:
+            REPORT_EXIT_STATUS: 1
+            TEST_PHP_ARGS: "-m --show-mem -q --show-diff"
+        run: make test
