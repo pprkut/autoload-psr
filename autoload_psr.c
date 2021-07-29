@@ -369,13 +369,25 @@ PHP_MINFO_FUNCTION(autoload_psr)
 }
 /* }}} */
 
+/**
+ * Register the argument info for the functions
+ */
+ZEND_BEGIN_ARG_INFO_EX(arginfo_autoload_register_psr4_prefix, 0, 0, 2)
+ ZEND_ARG_INFO(0, prefix)
+ ZEND_ARG_INFO(0, path)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_autoload_psr, 0, 0, 1)
+ ZEND_ARG_INFO(0, class)
+ZEND_END_ARG_INFO()
+
 /* {{{ autoload_psr_functions[]
  *
  * Every user visible function must have an entry in autoload_psr_functions[].
  */
 const zend_function_entry autoload_psr_functions[] = {
-    PHP_FE(autoload_register_psr4_prefix,    NULL)
-    PHP_FE(autoload_psr, NULL)
+    PHP_FE(autoload_register_psr4_prefix,    arginfo_autoload_register_psr4_prefix)
+    PHP_FE(autoload_psr, arginfo_autoload_psr)
     PHP_FE_END    /* Must be the last line in autoload_psr_functions[] */
 };
 /* }}} */
