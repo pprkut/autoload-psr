@@ -40,9 +40,6 @@ jobs:
       - name: PHPize source
         run: phpize
 
-      - name: Get php run-tests
-        run: wget -q -O run-tests.php https://raw.githubusercontent.com/php/php-src/master/run-tests.php
-
       - name: Configure source
         run: ./configure
 
@@ -52,5 +49,5 @@ jobs:
       - name: Make test
         env:
             REPORT_EXIT_STATUS: 1
-            TEST_PHP_ARGS: "-m --show-mem -q --show-diff"
+            TEST_PHP_ARGS: "-m -q --show-diff"
         run: make test
