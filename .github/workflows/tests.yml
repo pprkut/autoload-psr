@@ -21,7 +21,6 @@ jobs:
         include:
           - php-version: '8.0'
             experimental: true
-        include:
           - php-version: '8.1'
             experimental: true
     steps:
@@ -38,11 +37,11 @@ jobs:
       - name: Install valgrind
         run: sudo apt-get install -y valgrind
 
-      - name: Get php run-tests
-        run: wget -q -O run-tests.php https://raw.githubusercontent.com/php/php-src/master/run-tests.php
-
       - name: PHPize source
         run: phpize
+
+      - name: Get php run-tests
+        run: wget -q -O run-tests.php https://raw.githubusercontent.com/php/php-src/master/run-tests.php
 
       - name: Configure source
         run: ./configure
