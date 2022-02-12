@@ -60,12 +60,10 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
         ZVAL_NULL(&dummy);
         if (zend_hash_add(&EG(included_files), opened_path, &dummy)) {
             new_op_array = zend_compile_file(&file_handle, ZEND_REQUIRE);
-            zend_destroy_file_handle(&file_handle);
         } else {
             new_op_array = NULL;
-            zend_file_handle_dtor(&file_handle);
         }
-        zend_string_release(opened_path);
+        zend_string_release_ex(opened_path, 0);
         if (new_op_array) {
             ZVAL_UNDEF(&result);
             zend_execute(new_op_array, &result);
@@ -78,10 +76,12 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
 
             AUTOLOAD_PSR_G(loaded) = 1;
 
+            zend_destroy_file_handle(&file_handle);
             return zend_hash_exists(EG(class_table), class);
         }
     }
 
+    zend_destroy_file_handle(&file_handle);
     return 0;
 }
 /* }}} */
