@@ -104,8 +104,7 @@ static int autoload_psr0(zend_string *class, char *namespace, char *found)
     }
 
     if (found) {
-        int position = found - namespace;
-        class_file_len = (int)spprintf(&class_file, 0, "%.*s\\%s.php", position, namespace, class_name);
+        class_file_len = (int)spprintf(&class_file, 0, "%.*s\\%s.php", (int)(found - namespace), namespace, class_name);
     } else {
         class_file_len = (int)spprintf(&class_file, 0, "%s.php", class_name);
     }
