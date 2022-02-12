@@ -9,7 +9,7 @@
 #include "ext/standard/info.h"
 #include "php_autoload_psr.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(autoload_psr)
+ZEND_DECLARE_MODULE_GLOBALS(autoload_psr);
 
 /* {{{ PHP_INI
  */
@@ -402,7 +402,7 @@ zend_module_entry autoload_psr_module_entry = {
 
 #ifdef COMPILE_DL_AUTOLOAD_PSR
 #ifdef ZTS
-ZEND_TSRMLS_CACHE_DEFINE()
+ZEND_TSRMLS_CACHE_DEFINE();
 #endif
-ZEND_GET_MODULE(autoload_psr)
+ZEND_GET_MODULE(autoload_psr);
 #endif
