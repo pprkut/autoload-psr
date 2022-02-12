@@ -45,6 +45,7 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
     int ret;
 
     #if PHP_VERSION_ID >= 80100 /* if PHP version is 8.1.0 and later */
+        zend_stream_init_filename_ex(&file_handle, class_file);
         ret = php_stream_open_for_zend_ex(&file_handle, USE_PATH|STREAM_OPEN_FOR_INCLUDE);
     #else
         ret = php_stream_open_for_zend_ex(class_file, &file_handle, USE_PATH|STREAM_OPEN_FOR_INCLUDE);
