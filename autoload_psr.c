@@ -45,7 +45,9 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
     int ret;
 
     #if PHP_VERSION_ID >= 80100 /* if PHP version is 8.1.0 and later */
-        zend_stream_init_filename_ex(&file_handle, class_file);
+        zend_string *include_file;
+        include_file = zend_strpprintf(0, "%s", class_file);
+        zend_stream_init_filename_ex(&file_handle, include_file);
         ret = php_stream_open_for_zend_ex(&file_handle, USE_PATH|STREAM_OPEN_FOR_INCLUDE);
     #else
         ret = php_stream_open_for_zend_ex(class_file, &file_handle, USE_PATH|STREAM_OPEN_FOR_INCLUDE);
@@ -77,11 +79,17 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
             AUTOLOAD_PSR_G(loaded) = 1;
 
             zend_destroy_file_handle(&file_handle);
+            #if PHP_VERSION_ID >= 80100 /* if PHP version is 8.1.0 and later */
+                zend_string_release(include_file);
+            #endif
             return zend_hash_exists(EG(class_table), class);
         }
     }
 
     zend_destroy_file_handle(&file_handle);
+    #if PHP_VERSION_ID >= 80100 /* if PHP version is 8.1.0 and later */
+        zend_string_release(include_file);
+    #endif
     return 0;
 }
 /* }}} */
