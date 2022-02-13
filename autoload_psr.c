@@ -65,7 +65,11 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
         } else {
             new_op_array = NULL;
         }
-        zend_string_release_ex(opened_path, 0);
+        #if PHP_VERSION_ID >= 70300 /* if PHP version is 7.3.0 and later */
+            zend_string_release_ex(opened_path, 0);
+        #else
+            zend_string_release(opened_path);
+        #endif
         if (new_op_array) {
             ZVAL_UNDEF(&result);
             zend_execute(new_op_array, &result);
