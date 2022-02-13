@@ -90,9 +90,11 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
         }
     }
 
-    zend_destroy_file_handle(&file_handle);
     #if PHP_VERSION_ID >= 80100 /* if PHP version is 8.1.0 and later */
+        zend_destroy_file_handle(&file_handle);
         zend_string_release(include_file);
+    #else
+        zend_file_handle_dtor(&file_handle);
     #endif
     return 0;
 }
