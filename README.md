@@ -2,8 +2,7 @@ Autoload PSR
 ====
 *PHP PSR-0/PSR-4 Autoloader*
 
-
-[![Build Status](https://travis-ci.org/pprkut/autoload-psr.svg?branch=master)](https://travis-ci.org/pprkut/autoload-psr)
+![Tests](https://github.com/pprkut/autoload-psr/actions/workflows/tests.yml/badge.svg)
 
 The ```autoload_psr``` extension provides an integrated autoloader for PHP to load classes
 according to [PSR-0](https://www.php-fig.org/psr/psr-0/) and/or [PSR-4](https://www.php-fig.org/psr/psr-4/).
