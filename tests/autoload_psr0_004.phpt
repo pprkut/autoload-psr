@@ -1,9 +1,9 @@
 --TEST--
 Autoload classes with underscores, but no namespace with PSR-0
+--EXTENSIONS--
+autoload_psr
 --INI--
 include_path=./tests/files
---SKIPIF--
-<?php if (!extension_loaded("autoload_psr")) print "skip"; ?>
 --FILE--
 <?php
 

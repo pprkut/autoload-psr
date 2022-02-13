@@ -1,7 +1,7 @@
 --TEST--
 Autoload classes with PSR-4, partial namespace as prefix
---SKIPIF--
-<?php if (!extension_loaded("autoload_psr")) print "skip"; ?>
+--EXTENSIONS--
+autoload_psr
 --FILE--
 <?php
 

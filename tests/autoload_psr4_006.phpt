@@ -1,7 +1,7 @@
 --TEST--
 Autoload classes with PSR-4, multiple prefixes with different content
---SKIPIF--
-<?php if (!extension_loaded("autoload_psr")) print "skip"; ?>
+--EXTENSIONS--
+autoload_psr
 --FILE--
 <?php
 

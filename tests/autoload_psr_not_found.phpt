@@ -1,7 +1,7 @@
 --TEST--
 Namespaced class not found with either PSR-0 or PSR-4
---SKIPIF--
-<?php if (!extension_loaded("autoload_psr")) print "skip"; ?>
+--EXTENSIONS--
+autoload_psr
 --FILE--
 <?php
 

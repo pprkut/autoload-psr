@@ -1,7 +1,7 @@
 --TEST--
 Check that autoload_psr is registered as an autoloader
---SKIPIF--
-<?php if (!extension_loaded("autoload_psr")) print "skip"; ?>
+--EXTENSIONS--
+autoload_psr
 --FILE--
 <?php
 

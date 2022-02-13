@@ -1,7 +1,7 @@
 --TEST--
 Autoload classes with underscores in the class/package name with PSR-4
---SKIPIF--
-<?php if (!extension_loaded("autoload_psr")) print "skip"; ?>
+--EXTENSIONS--
+autoload_psr
 --FILE--
 <?php
 
