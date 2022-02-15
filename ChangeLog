@@ -1,12 +1,19 @@
 autoload_psr extension changelog
 
+Version 0.2.0
+-------------
+    * Support PHP 8.0 and 8.1
+
 Version 0.1.2
+-------------
     * Fix loading with PSR-4 when the same prefix is defined multiple times
 
 Version 0.1.1a
+-------------
     * Fix wrong version number
 
 Version 0.1.1
+-------------
     * Fix loading with PSR-4 when subnamespace points to a different location
 
 Version 0.1.0
