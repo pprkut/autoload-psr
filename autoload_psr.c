@@ -8,6 +8,7 @@
 #include "php_main.h"
 #include "ext/standard/info.h"
 #include "php_autoload_psr.h"
+#include "stdio.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(autoload_psr);
 
@@ -47,6 +48,7 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
     #if PHP_VERSION_ID >= 80100 /* if PHP version is 8.1.0 and later */
         zend_string *include_file;
         include_file = zend_strpprintf(0, "%s", class_file);
+        //printf("Trying to include file '%s'\n", class_file);
         zend_stream_init_filename_ex(&file_handle, include_file);
         ret = php_stream_open_for_zend_ex(&file_handle, USE_PATH|STREAM_OPEN_FOR_INCLUDE);
     #else
@@ -54,6 +56,7 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
     #endif
 
     if (ret == SUCCESS) {
+        //printf("File found!\n");
         zend_string *opened_path;
         if (!file_handle.opened_path) {
             file_handle.opened_path = zend_string_init(class_file, class_file_len, 0);
@@ -94,6 +97,8 @@ static int include_class_file(zend_string *class, char *class_file, int class_fi
 
             return zend_hash_exists(EG(class_table), class);
         }
+    } else {
+        //printf("File not found!\n");
     }
 
     return 0;
@@ -234,6 +239,8 @@ PHP_FUNCTION(autoload_register_psr4_prefix)
         Z_PARAM_STR(path);
     ZEND_PARSE_PARAMETERS_END();
 
+    //printf("Registering PSR4 prefix '%s' with '%s'\n", ZSTR_VAL(prefix), ZSTR_VAL(path));
+
     zval path_val;
 
     ZVAL_STR_COPY(&path_val, path);
@@ -281,6 +288,8 @@ PHP_FUNCTION(autoload_psr)
     namespace_len = (int)spprintf(&namespace, 0, "%s", ZSTR_VAL(class));
 
     found = (char *)zend_memrchr(namespace, '\\', namespace_len);
+
+    //printf("Trying to find class '%s'\n", ZSTR_VAL(class));
 
     autoload_psr0(class, namespace, found);
 
