@@ -1,0 +1,6 @@
+{
+    "name": "pprkut/autoload-psr",
+    "php-ext": {
+        "extension-name": "autoload_psr"
+    }
+}
