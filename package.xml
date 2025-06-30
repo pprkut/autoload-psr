@@ -45,50 +45,49 @@
             <file role="doc" name="README.md"/>
             <!-- Test runner -->
             <dir name="tests" role="test">
-                <file name="autoload_psr0_001.phpt"/>
-                <file name="autoload_psr0_002.phpt"/>
-                <file name="autoload_psr0_003.phpt"/>
-                <file name="autoload_psr0_004.phpt"/>
-                <file name="autoload_psr0_005.phpt"/>
-                <file name="autoload_psr4_001.phpt"/>
-                <file name="autoload_psr4_002.phpt"/>
-                <file name="autoload_psr4_003.phpt"/>
-                <file name="autoload_psr4_004.phpt"/>
-                <file name="autoload_psr4_005.php"/>
-                <file name="autoload_psr4_005.phpt"/>
-                <file name="autoload_psr4_006.phpt"/>
-                <file name="autoload_psr4_007.phpt"/>
-                <file name="autoload_psr_not_found.phpt"/>
-                <file name="autoload_psr_registered.phpt"/>
+                <file name="autoload_psr0_001.phpt" role="test"/>
+                <file name="autoload_psr0_002.phpt" role="test"/>
+                <file name="autoload_psr0_003.phpt" role="test"/>
+                <file name="autoload_psr0_004.phpt" role="test"/>
+                <file name="autoload_psr0_005.phpt" role="test"/>
+                <file name="autoload_psr4_001.phpt" role="test"/>
+                <file name="autoload_psr4_002.phpt" role="test"/>
+                <file name="autoload_psr4_003.phpt" role="test"/>
+                <file name="autoload_psr4_004.phpt" role="test"/>
+                <file name="autoload_psr4_005.phpt" role="test"/>
+                <file name="autoload_psr4_006.phpt" role="test"/>
+                <file name="autoload_psr4_007.phpt" role="test"/>
+                <file name="autoload_psr_not_found.phpt" role="test"/>
+                <file name="autoload_psr_registered.phpt" role="test"/>
                 <!-- Test data files -->
-                <dir name="files">
-                    <dir name="Bar">
-                        <file name="Baz2.php"/>
+                <dir name="files" role="test">
+                    <dir name="Bar" role="test">
+                        <file name="Baz2.php" role="test"/>
                     </dir>
-                    <dir name="Bar2">
-                        <file name="Baz3.php"/>
+                    <dir name="Bar2" role="test">
+                        <file name="Baz3.php" role="test"/>
                     </dir>
-                    <dir name="Foo">
-                        <file name="Baz.php"/>
-                        <dir name="Bar">
-                            <file name="Baz.php"/>
+                    <dir name="Foo" role="test">
+                        <file name="Baz.php" role="test"/>
+                        <dir name="Bar" role="test">
+                            <file name="Baz.php" role="test"/>
                             <dir name="Test">
-                                <file name="Class.php"/>
+                                <file name="Class.php" role="test"/>
                             </dir>
                         </dir>
-                        <dir name="Package_Name">
-                            <file name="TestClass.php"/>
-                            <file name="Test_Class.php"/>
+                        <dir name="Package_Name" role="test">
+                            <file name="TestClass.php" role="test"/>
+                            <file name="Test_Class.php" role="test"/>
                         </dir>
                     </dir>
-                    <dir name="Test">
-                        <file name="Test.php"/>
-                        <dir name="Bar">
-                            <file name="Baz.php"/>
-                            <file name="Foo.php"/>
+                    <dir name="Test" role="test">
+                        <file name="Test.php" role="test"/>
+                        <dir name="Bar" role="test">
+                            <file name="Baz.php" role="test"/>
+                            <file name="Foo.php" role="test"/>
                         </dir>
                     </dir>
-                    <file name="TestClass.php"/>
+                    <file name="TestClass.php" role="test"/>
                 </dir>
             </dir>
         </dir>
@@ -98,6 +97,9 @@
             <php>
                 <min>7.2.0</min>
             </php>
+            <pearinstaller>
+                <min>1.10.0</min>
+            </pearinstaller>
         </required>
     </dependencies>
     <providesextension>autoload_psr</providesextension>
