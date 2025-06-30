@@ -5,7 +5,7 @@
 extern zend_module_entry autoload_psr_module_entry;
 #define phpext_autoload_psr_ptr &autoload_psr_module_entry
 
-#define PHP_AUTOLOAD_PSR_VERSION "0.2.1"
+#define PHP_AUTOLOAD_PSR_VERSION "0.2.2dev"
 
 #ifdef PHP_WIN32
 #    define PHP_AUTOLOAD_PSR_API __declspec(dllexport)
