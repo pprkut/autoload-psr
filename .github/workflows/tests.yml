@@ -15,16 +15,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['7.0', '7.1', '7.2', '8.1']
+        php-version: ['7.2', '7.3', '7.4', '8.1', '8.2', '8.3', '8.4']
         experimental: [ false ]
         include:
-          - php-version: '7.3'
-            experimental: true
-          - php-version: '7.4'
-            experimental: true
           - php-version: '8.0'
             experimental: true
-          - php-version: '8.2'
+          - php-version: '8.5'
             experimental: true
     steps:
       - name: Checkout
