@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+    <name>autoload_psr</name>
+    <channel>pecl.php.net</channel>
+    <summary>Native PSR-0/4 autoloader for PHP</summary>
+    <description>
+        autoload_psr is a PHP extension written in C that provides a fast, built-in implementation
+        of PSR-0 and PSR-4 autoloading mechanisms.
+    </description>
+    <lead>
+        <name>Heinz Wiesinger</name>
+        <user>pprkut</user>
+        <email>pprkut@liwjatan.org</email>
+        <active>yes</active>
+    </lead>
+    <date>2025-06-30</date>
+    <version>
+        <release>0.2.1dev</release>
+        <api>1.0</api>
+    </version>
+    <stability>
+        <release>stable</release>
+        <api>stable</api>
+    </stability>
+    <license uri="https://raw.githubusercontent.com/pprkut/autoload-psr/refs/heads/master/LICENSE">PHP License</license>
+    <notes>
+- Improve CI
+- Add package.xml
+- Add support for PIE
+    </notes>
+    <contents>
+        <dir name="/">
+            <!-- Main source and headers -->
+            <file role="src" name="autoload_psr.c"/>
+            <file role="src" name="php_autoload_psr.h"/>
+            <file role="src" name="composer.json"/>
+            <file role="src" name="config.m4"/>
+            <file role="src" name="config.w32"/>
+            <!-- Docs -->
+            <file role="doc" name="CREDITS"/>
+            <file role="doc" name="ChangeLog"/>
+            <file role="doc" name="EXPERIMENTAL"/>
+            <file role="doc" name="LICENSE"/>
+            <file role="doc" name="README.md"/>
+            <!-- Test runner -->
+            <dir name="tests" role="test">
+                <file name="autoload_psr0_001.phpt"/>
+                <file name="autoload_psr0_002.phpt"/>
+                <file name="autoload_psr0_003.phpt"/>
+                <file name="autoload_psr0_004.phpt"/>
+                <file name="autoload_psr0_005.phpt"/>
+                <file name="autoload_psr4_001.phpt"/>
+                <file name="autoload_psr4_002.phpt"/>
+                <file name="autoload_psr4_003.phpt"/>
+                <file name="autoload_psr4_004.phpt"/>
+                <file name="autoload_psr4_005.php"/>
+                <file name="autoload_psr4_005.phpt"/>
+                <file name="autoload_psr4_006.phpt"/>
+                <file name="autoload_psr4_007.phpt"/>
+                <file name="autoload_psr_not_found.phpt"/>
+                <file name="autoload_psr_registered.phpt"/>
+                <!-- Test data files -->
+                <dir name="files">
+                    <dir name="Bar">
+                        <file name="Baz2.php"/>
+                    </dir>
+                    <dir name="Bar2">
+                        <file name="Baz3.php"/>
+                    </dir>
+                    <dir name="Foo">
+                        <file name="Baz.php"/>
+                        <dir name="Bar">
+                            <file name="Baz.php"/>
+                            <dir name="Test">
+                                <file name="Class.php"/>
+                            </dir>
+                        </dir>
+                        <dir name="Package_Name">
+                            <file name="TestClass.php"/>
+                            <file name="Test_Class.php"/>
+                        </dir>
+                    </dir>
+                    <dir name="Test">
+                        <file name="Test.php"/>
+                        <dir name="Bar">
+                            <file name="Baz.php"/>
+                            <file name="Foo.php"/>
+                        </dir>
+                    </dir>
+                    <file name="TestClass.php"/>
+                </dir>
+            </dir>
+        </dir>
+    </contents>
+    <dependencies>
+        <required>
+            <php>
+                <min>7.2.0</min>
+            </php>
+        </required>
+    </dependencies>
+    <providesextension>autoload_psr</providesextension>
+    <extsrcrelease/>
+    <changelog>
+        <release>
+            <date>2022-02-16</date>
+            <version>
+                <release>0.2.0</release>
+                <api>1.0</api>
+            </version>
+            <stability>
+                <release>stable</release>
+                <api>stable</api>
+            </stability>
+            <license uri="https://raw.githubusercontent.com/pprkut/autoload-psr/refs/heads/master/LICENSE">PHP License</license>
+            <notes>
+This release primarily adds support for PHP 8.0 and 8.1.
+There's also some CI fixes included.
+            </notes>
+        </release>
+        <release>
+            <date>2020-01-13</date>
+            <version>
+                <release>0.1.2</release>
+                <api>1.0</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>stable</api>
+            </stability>
+            <license uri="https://raw.githubusercontent.com/pprkut/autoload-psr/refs/heads/master/LICENSE">PHP License</license>
+            <notes>
+Fix loading with PSR-4 when the same prefix is defined multiple times
+            </notes>
+        </release>
+        <release>
+            <date>2019-06-11</date>
+            <version>
+                <release>0.1.1a</release>
+                <api>1.0</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>stable</api>
+            </stability>
+            <license uri="https://raw.githubusercontent.com/pprkut/autoload-psr/refs/heads/master/LICENSE">PHP License</license>
+            <notes>
+Hotfix release that fixes a wrong version number.
+            </notes>
+        </release>
+        <release>
+            <date>2019-06-03</date>
+            <version>
+                <release>0.1.1</release>
+                <api>1.0</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>stable</api>
+            </stability>
+            <license uri="https://raw.githubusercontent.com/pprkut/autoload-psr/refs/heads/master/LICENSE">PHP License</license>
+            <notes>
+This release fixes a bug when loading classes where subnamespaces are pointing to different locations.
+            </notes>
+        </release>
+        <release>
+            <date>2018-05-01</date>
+            <version>
+                <release>0.1.0</release>
+                <api>1.0</api>
+            </version>
+            <stability>
+                <release>beta</release>
+                <api>stable</api>
+            </stability>
+            <license uri="https://raw.githubusercontent.com/pprkut/autoload-psr/refs/heads/master/LICENSE">PHP License</license>
+            <notes>
+The initial release contains the basic functionality for PSR-0 and PSR-4 autoloading and should cover the most common use cases.
+            </notes>
+        </release>
+    </changelog>
+</package>
