@@ -1,5 +1,12 @@
 autoload_psr extension changelog
 
+Version 0.2.1
+-------------
+    * Improve CI
+    * Add package.xml
+    * Add support for PIE
+    * Add IDE stub file
+
 Version 0.2.0
 -------------
     * Support PHP 8.0 and 8.1
