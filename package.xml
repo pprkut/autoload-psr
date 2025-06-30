@@ -27,6 +27,7 @@
 - Improve CI
 - Add package.xml
 - Add support for PIE
+- Add IDE stub file
     </notes>
     <contents>
         <dir name="/">
